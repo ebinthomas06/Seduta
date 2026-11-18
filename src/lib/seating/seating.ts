@@ -181,6 +181,52 @@ export function precheck(
 /* ───────────────────────── Placement ───────────────────────── */
 
 /**
+ * Fills one room greedily from the subject queues, advancing `position` as students are used.
+ * Seats that cannot be filled safely stay empty.
+ */
+function fillGrid(
+  room: Room,
+  queues: Map<string, Student[]>,
+  position: Map<string, number>,
+  rules: Rules,
+): (Student | null)[][] {
+  const remaining = (s: string) =>
+    queues.get(s)!.length - (position.get(s) ?? 0);
+  const grid: (Student | null)[][] = Array.from({ length: room.rows }, () =>
+    Array(room.cols).fill(null),
+  );
+  const disabled = new Set(room.disabled);
+
+  for (let r = 0; r < room.rows; r++) {
+    for (let c = 0; c < room.cols; c++) {
+      if (disabled.has(`${r},${c}`)) continue;
+      const blocked = new Set<string>();
+      for (const [nr, nc] of earlierNeighbours(r, c, rules)) {
+        const s = grid[nr]?.[nc];
+        if (s) blocked.add(s.subject);
+      }
+      const left = grid[r][c - 1]?.subject;
+
+      let best: string | null = null;
+      for (const subject of queues.keys()) {
+        if (blocked.has(subject) || remaining(subject) === 0) continue;
+        if (
+          best === null ||
+          remaining(subject) > remaining(best) ||
+          (remaining(subject) === remaining(best) && best === left)
+        )
+          best = subject;
+      }
+      if (best === null) continue; // leave empty
+      const i = position.get(best) ?? 0;
+      grid[r][c] = queues.get(best)![i];
+      position.set(best, i + 1);
+    }
+  }
+  return grid;
+}
+
+/**
  * Greedy: walk seats row by row. At each seat, among subjects that don't clash with already-placed
  * neighbours, pick the one with the MOST students remaining (keeps big subjects from getting stranded),
  * preferring the subject different from the left neighbour on ties. Students are drawn in roll order from
@@ -198,44 +244,10 @@ export function place(groups: Group[], rooms: Room[], rules: Rules): Result {
     queues.set(g.subject, q);
   }
   const position = new Map<string, number>(); // subject -> next index in queue
-  const remaining = (s: string) =>
-    queues.get(s)!.length - (position.get(s) ?? 0);
 
   const layout: Layout = {};
-  for (const room of rooms) {
-    const grid: (Student | null)[][] = Array.from({ length: room.rows }, () =>
-      Array(room.cols).fill(null),
-    );
-    const disabled = new Set(room.disabled);
-
-    for (let r = 0; r < room.rows; r++) {
-      for (let c = 0; c < room.cols; c++) {
-        if (disabled.has(`${r},${c}`)) continue;
-        const blocked = new Set<string>();
-        for (const [nr, nc] of earlierNeighbours(r, c, rules)) {
-          const s = grid[nr]?.[nc];
-          if (s) blocked.add(s.subject);
-        }
-        const left = grid[r][c - 1]?.subject;
-
-        let best: string | null = null;
-        for (const subject of queues.keys()) {
-          if (blocked.has(subject) || remaining(subject) === 0) continue;
-          if (
-            best === null ||
-            remaining(subject) > remaining(best) ||
-            (remaining(subject) === remaining(best) && best === left)
-          )
-            best = subject;
-        }
-        if (best === null) continue; // leave empty
-        const i = position.get(best) ?? 0;
-        grid[r][c] = queues.get(best)![i];
-        position.set(best, i + 1);
-      }
-    }
-    layout[room.id] = grid;
-  }
+  for (const room of rooms)
+    layout[room.id] = fillGrid(room, queues, position, rules);
 
   const unplaced: Student[] = [];
   for (const [subject, q] of queues)
@@ -330,6 +342,37 @@ export function suggestSwaps(
   return out.sort(
     (x, y) => x.clashesAfter - y.clashesAfter || +x.empty - +y.empty,
   );
+}
+
+/**
+ * Seats the students currently in one room again from scratch, using the same greedy method as `place`.
+ * Returns null (and changes nothing) if that would leave anyone without a seat.
+ */
+export function rearrangeRoom(
+  layout: Layout,
+  rooms: Room[],
+  rules: Rules,
+  roomId: string,
+): Layout | null {
+  const room = rooms.find((r) => r.id === roomId);
+  const grid = layout[roomId];
+  if (!room || !grid) return null;
+
+  const students = grid.flat().filter((s): s is Student => s !== null);
+  const queues = new Map<string, Student[]>();
+  for (const s of students) {
+    const q = queues.get(s.subject) ?? [];
+    q.push(s);
+    queues.set(s.subject, q);
+  }
+  for (const q of queues.values())
+    q.sort((a, b) => a.groupId.localeCompare(b.groupId) || a.roll - b.roll);
+
+  const position = new Map<string, number>();
+  const next = fillGrid(room, queues, position, rules);
+  const seated = next.flat().filter(Boolean).length;
+  if (seated !== students.length) return null;
+  return { ...layout, [roomId]: next };
 }
 
 /* ───────────────────────── Word-export data ───────────────────────── */
