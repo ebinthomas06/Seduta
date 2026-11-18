@@ -54,6 +54,18 @@ export async function updatePlan(
   });
 }
 
+/**
+ * Changes what a layout is generated from (groups, rooms or rules). Any existing
+ * layout would now be out of date, so it is cleared and the plan goes back to draft.
+ */
+export function updatePlanInputs(
+  id: string,
+  patch: Partial<Pick<Plan, "groups" | "rooms" | "rules">>,
+  db: SedutaDB = getDb(),
+): Promise<Plan | undefined> {
+  return updatePlan(id, { ...patch, layout: null, status: "draft" }, db);
+}
+
 /** Deep copy with a new id and "(copy)" appended to the name. */
 export async function duplicatePlan(
   id: string,
