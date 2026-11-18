@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { PdfPagePreview } from "@/components/export/PdfPagePreview";
+import { WordPagePreview } from "@/components/export/WordPagePreview";
 import { BottomBar } from "@/components/ui/BottomBar";
 import { Button } from "@/components/ui/Button";
 import { DownloadIcon } from "@/components/ui/Icons";
 import { Modal } from "@/components/ui/Modal";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { exportFileName, downloadBytes } from "@/lib/export/files";
+import { buildRoomsDocx } from "@/lib/export/docx";
 import { buildSeatingPdf, type PaperSize } from "@/lib/export/pdf";
 import type { Plan } from "@/lib/db/types";
 import type { Snapshot } from "@/lib/editor/ops";
@@ -21,15 +23,19 @@ interface ExportDialogProps {
   snap: Snapshot;
 }
 
+const DOCX_MIME =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
 /** M10 (bottom sheet) and D4 (dialog with previews). */
 export function ExportDialog({ open, onClose, plan, snap }: ExportDialogProps) {
   const desktop = useIsDesktop();
   const [pdf, setPdf] = useState(true);
+  const [word, setWord] = useState(true);
   const [paper, setPaper] = useState<PaperSize>("a4");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const count = pdf ? 1 : 0;
+  const count = (pdf ? 1 : 0) + (word ? 1 : 0);
   const pdfName = exportFileName(plan.name, "layout", "pdf");
   const wordName = exportFileName(plan.name, "rooms", "docx");
 
@@ -47,6 +53,18 @@ export function ExportDialog({ open, onClose, plan, snap }: ExportDialogProps) {
           paper,
         });
         downloadBytes(bytes, pdfName, "application/pdf");
+      }
+      if (word) {
+        // Browsers can drop a second download that starts in the same instant.
+        if (pdf) await new Promise((r) => setTimeout(r, 400));
+        const bytes = await buildRoomsDocx({
+          planName: plan.name,
+          rooms: snap.rooms,
+          layout: snap.layout,
+          groups: plan.groups,
+          paper,
+        });
+        downloadBytes(bytes, wordName, DOCX_MIME);
       }
       onClose();
     } catch {
@@ -90,11 +108,11 @@ export function ExportDialog({ open, onClose, plan, snap }: ExportDialogProps) {
           {!desktop && <PdfThumb />}
         </label>
 
-        <label className="flex items-start gap-3.5 border-b border-rule py-4 opacity-60">
+        <label className="flex items-start gap-3.5 border-b border-rule py-4">
           <input
             type="checkbox"
-            checked={false}
-            disabled
+            checked={word}
+            onChange={(e) => setWord(e.target.checked)}
             aria-label="Include Word document"
             className="mt-0.5 h-6 w-6 flex-none accent-accent"
           />
@@ -106,10 +124,13 @@ export function ExportDialog({ open, onClose, plan, snap }: ExportDialogProps) {
               A table of the roll number ranges sitting in each room. Editable,
               for the notice board.
             </span>
-            <span className="font-mono text-[12px] text-ink2">
-              {desktop ? `${wordName} · ` : ""}Coming in the next update
-            </span>
+            {desktop && (
+              <span className="font-mono text-[12px] text-ink2">
+                {wordName}
+              </span>
+            )}
           </span>
+          {!desktop && <WordThumb />}
         </label>
       </div>
 
@@ -184,8 +205,9 @@ export function ExportDialog({ open, onClose, plan, snap }: ExportDialogProps) {
         <div className="max-w-[340px] min-w-[280px] flex-[1_1_280px]">
           {options}
         </div>
-        <div className="flex min-w-0 flex-[999_1_300px] justify-center">
-          <PdfPagePreview plan={plan} snap={snap} paper={paper} />
+        <div className="flex min-w-0 flex-[999_1_300px] flex-wrap items-start justify-center gap-6">
+          {pdf && <PdfPagePreview plan={plan} snap={snap} paper={paper} />}
+          {word && <WordPagePreview plan={plan} snap={snap} paper={paper} />}
         </div>
       </div>
     </Modal>
@@ -218,6 +240,33 @@ function PdfThumb() {
             <rect key={`${x}-${y}`} x={x} y={y} width="6" height="6" />
           )),
         )}
+      </g>
+    </svg>
+  );
+}
+
+function WordThumb() {
+  return (
+    <svg
+      width="44"
+      height="58"
+      viewBox="0 0 44 58"
+      fill="none"
+      aria-hidden="true"
+      className="flex-none"
+    >
+      <rect
+        x="0.5"
+        y="0.5"
+        width="43"
+        height="57"
+        fill="#FBFAF6"
+        stroke="#8E887A"
+      />
+      <rect x="7" y="7" width="20" height="3" fill="#1B1F2A" />
+      <g stroke="#8E887A" strokeWidth="0.8">
+        <rect x="7" y="16" width="30" height="34" />
+        <path d="M7 24h30M7 32h30M7 40h30M17 16v34" />
       </g>
     </svg>
   );
