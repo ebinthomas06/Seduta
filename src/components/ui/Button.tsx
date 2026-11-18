@@ -2,11 +2,18 @@ import Link from "next/link";
 import { cx } from "@/lib/cx";
 
 type Variant =
-  "primary" | "outline" | "danger" | "dashed" | "text" | "textDanger";
+  | "primary"
+  | "accent"
+  | "outline"
+  | "danger"
+  | "dashed"
+  | "text"
+  | "textDanger";
 type Size = "lg" | "md" | "sm";
 
 const variants: Record<Variant, string> = {
   primary: "bg-ink text-bg",
+  accent: "bg-accent text-on-accent hover:bg-accent-hover",
   outline: "border border-ink bg-surface text-ink",
   danger: "border border-alert text-alert",
   dashed: "border border-dashed border-ink2 text-ink",

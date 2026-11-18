@@ -138,7 +138,7 @@ function allNeighbours(r: number, c: number, rules: Rules): [number, number][] {
 /* ───────────────────────── Feasibility pre-check ───────────────────────── */
 
 /** Upper bound on how many students of ONE subject a room can hold under the rules. */
-function maxSameSubject(room: Room, rules: Rules): number {
+export function maxSameSubject(room: Room, rules: Rules): number {
   const usable = room.rows * room.cols - room.disabled.length;
   let bound: number;
   if (rules.diagonal)
