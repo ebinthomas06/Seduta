@@ -30,6 +30,15 @@ interface SeatGridProps {
   codeOf?: (s: Student) => string;
   /** Draw the Board bar above the grid. */
   showBoard?: boolean;
+  /**
+   * Wraps each interactive seat, e.g. to make it draggable. The wrapper sits inside the
+   * grid cell, so it is the element that gets measured.
+   */
+  wrapSeat?: (
+    row: number,
+    col: number,
+    seat: React.ReactNode,
+  ) => React.ReactNode;
   className?: string;
 }
 
@@ -52,12 +61,14 @@ export function SeatGrid({
   showCode = true,
   codeOf = (s) => s.label,
   showBoard = true,
+  wrapSeat,
   className,
 }: SeatGridProps) {
   const h = cellHeight ?? cellSize;
   const small = cellSize < 40;
-  const benchGap = small ? 8 : 12;
-  const seatGap = 2;
+  const large = cellSize >= 64; // desktop editor
+  const benchGap = small ? 8 : large ? 20 : 12;
+  const seatGap = large ? 4 : 2;
   const cols = grid[0]?.length ?? 0;
   const gapBefore = (c: number) =>
     c === 0 ? 0 : c % Math.max(1, seatsPerBench) === 0 ? benchGap : seatGap;
@@ -70,10 +81,11 @@ export function SeatGrid({
     <div className={cx("flex flex-col items-center gap-2", className)}>
       {showBoard && (
         <div
-          style={{ width, height: small ? 16 : 22 }}
+          style={{ width, height: small ? 16 : large ? 26 : 22 }}
           className={cx(
-            "box-border flex items-center justify-center border border-ink font-mono font-medium tracking-[.2em] text-ink uppercase",
-            small ? "text-[8px]" : "text-[10px]",
+            "box-border flex items-center justify-center border border-ink font-mono font-medium text-ink uppercase",
+            large ? "tracking-[.24em]" : "tracking-[.2em]",
+            small ? "text-[8px]" : large ? "text-[11px]" : "text-[10px]",
           )}
         >
           Board
@@ -81,7 +93,7 @@ export function SeatGrid({
       )}
       <div
         className="flex flex-col"
-        style={{ gap: small ? 4 : 6 }}
+        style={{ gap: small ? 4 : large ? 8 : 6 }}
         role="group"
         aria-label="Seat grid"
       >
@@ -121,11 +133,11 @@ export function SeatGrid({
               const style: React.CSSProperties = {
                 width: cellSize,
                 height: h,
-                marginLeft: gapBefore(c),
                 background: info ? tintVar(info.tint) : undefined,
               };
               const cls = cx(
-                "box-border flex flex-none flex-col items-center justify-center gap-1 rounded-[3px] p-0 text-ink",
+                "box-border flex flex-none flex-col items-center justify-center rounded-[3px] p-0 text-ink",
+                large ? "gap-1.5" : "gap-1",
                 off
                   ? "border border-dashed border-ink2 bg-transparent text-ink2"
                   : cx(border, !info && "bg-surface"),
@@ -142,7 +154,11 @@ export function SeatGrid({
                   <span
                     className={cx(
                       "leading-none font-semibold",
-                      small ? "text-[10px]" : "text-[12px]",
+                      small
+                        ? "text-[10px]"
+                        : large
+                          ? "text-[13px]"
+                          : "text-[12px]",
                     )}
                     aria-hidden="true"
                   >
@@ -150,7 +166,10 @@ export function SeatGrid({
                   </span>
                   {showCode && !small && (
                     <span
-                      className="font-mono text-[12px] leading-none font-medium"
+                      className={cx(
+                        "font-mono leading-none font-medium",
+                        large ? "text-[13px]" : "text-[12px]",
+                      )}
                       aria-hidden="true"
                     >
                       {codeOf(student)}
@@ -159,22 +178,17 @@ export function SeatGrid({
                 </>
               ) : null;
 
-              if (!onSeatClick) {
-                return (
-                  <div
-                    key={c}
-                    role="img"
-                    aria-label={label}
-                    style={style}
-                    className={cls}
-                  >
-                    {content}
-                  </div>
-                );
-              }
-              return (
+              const seat = !onSeatClick ? (
+                <div
+                  role="img"
+                  aria-label={label}
+                  style={style}
+                  className={cls}
+                >
+                  {content}
+                </div>
+              ) : (
                 <button
-                  key={c}
                   type="button"
                   aria-label={label}
                   aria-pressed={isSelected}
@@ -184,6 +198,11 @@ export function SeatGrid({
                 >
                   {content}
                 </button>
+              );
+              return (
+                <div key={c} style={{ marginLeft: gapBefore(c) }}>
+                  {onSeatClick && wrapSeat ? wrapSeat(r, c, seat) : seat}
+                </div>
               );
             })}
           </div>

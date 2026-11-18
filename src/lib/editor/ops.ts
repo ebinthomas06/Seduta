@@ -202,3 +202,49 @@ export function rearrange(
   const layout = rearrangeRoom(snap.layout, snap.rooms, rules, roomId);
   return layout ? { ...snap, layout } : null;
 }
+
+/* ───────────────────────── Desktop inspector text ───────────────────────── */
+
+/** "Row 3 and row 4, seat 2" / "Row 3, seats 1 and 2" / "Row 2, seat 1 and row 3, seat 2". */
+export function clashPosition(a: Seat, b: Seat): string {
+  const [r1, c1] = [a[0] + 1, a[1] + 1];
+  const [r2, c2] = [b[0] + 1, b[1] + 1];
+  if (r1 === r2) return `Row ${r1}, seats ${c1} and ${c2}`;
+  if (c1 === c2) return `Row ${r1} and row ${r2}, seat ${c1}`;
+  return `Row ${r1}, seat ${c1} and row ${r2}, seat ${c2}`;
+}
+
+/** What a swap achieves, e.g. "Clears both clashes" or "Clears one of the two". */
+export function suggestionEffect(before: number, after: number): string {
+  const cleared = before - after;
+  if (cleared >= before)
+    return before === 1
+      ? "Clears the clash"
+      : before === 2
+        ? "Clears both clashes"
+        : `Clears all ${before} clashes`;
+  if (before === 2 && cleared === 1) return "Clears one of the two";
+  return `Clears ${cleared} of ${before} clashes`;
+}
+
+/** Seated students versus usable seats in one room. */
+export function roomOccupancy(snap: Snapshot, roomId: string) {
+  const room = snap.rooms.find((r) => r.id === roomId);
+  const grid = snap.layout[roomId];
+  if (!room || !grid) return { seated: 0, usable: 0 };
+  const seated = grid.flat().filter(Boolean).length;
+  const off = new Set(room.disabled);
+  let usable = 0;
+  for (let r = 0; r < room.rows; r++)
+    for (let c = 0; c < room.cols; c++) if (!off.has(`${r},${c}`)) usable++;
+  return { seated, usable };
+}
+
+/** How many students of each subject have a seat, across every room. */
+export function seatedBySubject(snap: Snapshot): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const grid of Object.values(snap.layout))
+    for (const s of grid.flat())
+      if (s) counts.set(s.subject, (counts.get(s.subject) ?? 0) + 1);
+  return counts;
+}

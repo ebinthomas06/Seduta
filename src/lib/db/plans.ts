@@ -66,6 +66,30 @@ export function updatePlanInputs(
   return updatePlan(id, { ...patch, layout: null, status: "draft" }, db);
 }
 
+/**
+ * Read-modify-write of the plan's inputs inside one transaction, so rapid edits from several
+ * fields never overwrite each other with stale data. Clears any layout, like updatePlanInputs.
+ */
+export function mutatePlanInputs(
+  id: string,
+  change: (plan: Plan) => Partial<Pick<Plan, "groups" | "rooms" | "rules">>,
+  db: SedutaDB = getDb(),
+): Promise<Plan | undefined> {
+  return db.transaction("rw", db.plans, async () => {
+    const current = await db.plans.get(id);
+    if (!current) return undefined;
+    const next: Plan = {
+      ...current,
+      ...change(current),
+      layout: null,
+      status: "draft",
+      updatedAt: Date.now(),
+    };
+    await db.plans.put(next);
+    return next;
+  });
+}
+
 /** Deep copy with a new id and "(copy)" appended to the name. */
 export async function duplicatePlan(
   id: string,

@@ -209,3 +209,43 @@ describe("edits", () => {
     expect(after).toEqual(before);
   });
 });
+
+import {
+  clashPosition,
+  roomOccupancy,
+  seatedBySubject,
+  suggestionEffect,
+} from "./ops";
+
+describe("inspector text", () => {
+  it("describes where a clash is", () => {
+    expect(clashPosition([2, 1], [3, 1])).toBe("Row 3 and row 4, seat 2");
+    expect(clashPosition([0, 0], [0, 1])).toBe("Row 1, seats 1 and 2");
+    expect(clashPosition([1, 0], [2, 1])).toBe(
+      "Row 2, seat 1 and row 3, seat 2",
+    );
+  });
+
+  it("describes what a swap clears", () => {
+    expect(suggestionEffect(2, 0)).toBe("Clears both clashes");
+    expect(suggestionEffect(2, 1)).toBe("Clears one of the two");
+    expect(suggestionEffect(1, 0)).toBe("Clears the clash");
+    expect(suggestionEffect(5, 0)).toBe("Clears all 5 clashes");
+    expect(suggestionEffect(5, 3)).toBe("Clears 2 of 5 clashes");
+  });
+
+  it("counts seated and usable seats and subjects", () => {
+    const snap = base();
+    expect(roomOccupancy(snap, "r1")).toEqual({ seated: 35, usable: 35 });
+    const r4 = roomOccupancy(snap, "r4");
+    expect(r4.usable).toBe(30);
+    const total = ["r1", "r2", "r3", "r4"]
+      .map((id) => roomOccupancy(snap, id).seated)
+      .reduce((a, b) => a + b, 0);
+    expect(total).toBe(136);
+    const by = seatedBySubject(snap);
+    expect(by.get("Maths")).toBe(58);
+    expect(by.get("Physics")).toBe(48);
+    expect(by.get("Chemistry")).toBe(30);
+  });
+});
