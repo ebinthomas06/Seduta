@@ -12,8 +12,9 @@ export function Workspace({ plan }: { plan: Plan }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <WorkspaceHeader planName={plan.name} />
-      <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-wrap items-start gap-10 p-8">
+      <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-wrap items-start gap-10 p-8">
         <div className="flex min-w-0 flex-[999_1_640px] flex-col gap-9">
+          <h1 className="sr-only">{plan.name}: plan, groups and rooms</h1>
           <div id="plan" className="scroll-mt-8">
             <PlanSection plan={plan} />
           </div>
@@ -25,7 +26,7 @@ export function Workspace({ plan }: { plan: Plan }) {
           </div>
         </div>
         <SummaryPanel plan={plan} />
-      </div>
+      </main>
     </div>
   );
 }

@@ -33,6 +33,7 @@ export function useLayoutController(
 ) {
   const { edit, undo, redo } = useEditorStore.getState();
   const rules = plan.rules;
+  const saveError = useEditorStore((s) => s.saveError);
 
   const [roomId, setRoomId] = useState(snap.rooms[0]?.id ?? "");
   const [selected, setSelected] = useState<Seat | null>(null);
@@ -184,6 +185,7 @@ export function useLayoutController(
     setConfirmRearrange,
     canUndo,
     canRedo,
+    saveError,
     chooseRoom,
     clearSelection,
     onSeat,

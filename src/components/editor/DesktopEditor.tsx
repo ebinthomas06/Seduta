@@ -265,6 +265,15 @@ export function DesktopEditor({ c }: { c: LayoutController }) {
               {c.notice}
             </p>
           )}
+          {c.saveError && (
+            <p
+              role="alert"
+              className="mt-3 text-center text-[13px] font-medium text-alert"
+            >
+              Couldn&apos;t save your last change on this device. Export a
+              backup from the saved plans page, then reload.
+            </p>
+          )}
         </main>
 
         {/* Inspector */}

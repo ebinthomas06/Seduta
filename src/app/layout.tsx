@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { StorageGate } from "@/components/StorageGate";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 import { APP_NAME } from "@/lib/constants";
 import "./globals.css";
@@ -18,7 +19,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: APP_NAME,
+  title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
   description:
     "Exam seating arrangements, without neighbours sharing a subject.",
   icons: { apple: "/icons/apple-touch-icon.png" },
@@ -45,7 +46,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col font-sans">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <StorageGate>{children}</StorageGate>
+        </ThemeProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

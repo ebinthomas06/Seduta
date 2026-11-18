@@ -13,7 +13,7 @@ import { useGenerate } from "@/lib/useGenerate";
 
 /** Sticky summary: live counts, the same pre-checks as the review step, and Generate. */
 export function SummaryPanel({ plan }: { plan: Plan }) {
-  const { generate, busy, unplaced, dismiss } = useGenerate(plan);
+  const { generate, busy, error, unplaced, dismiss } = useGenerate(plan);
   const review = useMemo(() => reviewPlan(plan), [plan]);
   const subjects = new Set(plan.groups.map((g) => g.subject)).size;
 
@@ -71,6 +71,14 @@ export function SummaryPanel({ plan }: { plan: Plan }) {
         >
           Generate seating
         </Button>
+        {error && (
+          <p
+            role="alert"
+            className="text-center text-[13px] font-medium text-alert"
+          >
+            {error}
+          </p>
+        )}
         <p className="text-center text-[13px] text-ink2">
           You can move any student afterwards.
         </p>

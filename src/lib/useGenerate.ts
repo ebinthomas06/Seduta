@@ -15,16 +15,29 @@ export function useGenerate(plan: Plan) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [unplaced, setUnplaced] = useState<Student[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function generate() {
     if (busy) return;
     setBusy(true);
-    const result = place(plan.groups, plan.rooms, plan.rules);
-    await updatePlan(plan.id, { layout: result.layout, status: "ready" });
-    setBusy(false);
-    if (result.unplaced.length > 0) setUnplaced(result.unplaced);
-    else router.push(routes.layout(plan.id));
+    setError(null);
+    try {
+      const result = place(plan.groups, plan.rooms, plan.rules);
+      await updatePlan(plan.id, { layout: result.layout, status: "ready" });
+      if (result.unplaced.length > 0) setUnplaced(result.unplaced);
+      else router.push(routes.layout(plan.id));
+    } catch {
+      setError("Couldn't save the seating on this device. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
-  return { generate, busy, unplaced, dismiss: () => setUnplaced(null) };
+  return {
+    generate,
+    busy,
+    error,
+    unplaced,
+    dismiss: () => setUnplaced(null),
+  };
 }

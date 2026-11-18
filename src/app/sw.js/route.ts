@@ -1,6 +1,5 @@
 import { buildServiceWorker } from "@/lib/serviceWorker";
 
-
 const BUILD_ID = Date.now().toString(36);
 
 export function GET() {

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { GroupSheet } from "@/components/groups/GroupSheet";
 import { StepScreen } from "@/components/plan/StepScreen";
@@ -20,23 +19,15 @@ import { expandGroup, type Group } from "@/lib/seating/seating";
 import { buildSubjectMap } from "@/lib/subjects";
 import { routes } from "@/lib/routes";
 import { usePlanId } from "@/lib/useRouteParams";
+import { LoadingState, PlanNotFound } from "@/components/plan/PlanStates";
 
 export function GroupsScreen() {
   const id = usePlanId();
   const plan = usePlan(id);
   const desktop = useIsDesktop();
 
-  if (plan === undefined) return null;
-  if (plan === null) {
-    return (
-      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-start gap-3 px-4 pt-10">
-        <h1 className="text-[24px] font-semibold">Plan not found</h1>
-        <Link href="/" className="text-[15px] font-medium">
-          Back to saved plans
-        </Link>
-      </div>
-    );
-  }
+  if (plan === undefined) return <LoadingState />;
+  if (plan === null) return <PlanNotFound />;
   return desktop ? <Workspace plan={plan} /> : <GroupsList plan={plan} />;
 }
 

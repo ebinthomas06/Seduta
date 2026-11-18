@@ -160,7 +160,7 @@ function GroupRow({
           onChange={(e) => change("primary", e.target.value)}
           className={cls("primary")}
         >
-          {primaryOptions(plan.institution).map((o) => (
+          {primaryOptions(plan.institution, form.primary).map((o) => (
             <option key={o}>{o}</option>
           ))}
         </select>

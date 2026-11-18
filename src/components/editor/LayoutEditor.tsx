@@ -9,6 +9,7 @@ import type { Plan } from "@/lib/db/types";
 import type { Snapshot } from "@/lib/editor/ops";
 import { useEditorStore } from "@/lib/editor/store";
 import { useIsDesktop } from "@/lib/useIsDesktop";
+import { LoadingState } from "@/components/plan/PlanStates";
 
 /** Loads the saved layout into the editor store, autosaves every change, and picks the view. */
 export function LayoutEditor({ plan }: { plan: Plan }) {
@@ -33,10 +34,12 @@ export function LayoutEditor({ plan }: { plan: Plan }) {
     if (!present || loadedFor !== plan.id || present === lastSaved.current)
       return;
     lastSaved.current = present;
-    void updatePlan(plan.id, { layout: present.layout, rooms: present.rooms });
+    updatePlan(plan.id, { layout: present.layout, rooms: present.rooms })
+      .then(() => useEditorStore.getState().setSaveError(false))
+      .catch(() => useEditorStore.getState().setSaveError(true));
   }, [present, loadedFor, plan.id]);
 
-  if (!history || loadedFor !== plan.id) return null;
+  if (!history || loadedFor !== plan.id) return <LoadingState />;
   return (
     <EditorView
       plan={plan}

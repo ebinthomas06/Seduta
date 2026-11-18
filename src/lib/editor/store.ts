@@ -6,6 +6,9 @@ interface EditorState {
   /** Which plan is loaded, so a reload of the same plan does not wipe undo history. */
   planId: string | null;
   history: History<Snapshot> | null;
+  /** True when the last autosave failed, so the editor can say so. */
+  saveError: boolean;
+  setSaveError: (failed: boolean) => void;
   load: (planId: string, snapshot: Snapshot) => void;
   /** Forget the loaded plan, e.g. on leaving the editor, so a regenerated layout is reloaded. */
   reset: () => void;
@@ -17,8 +20,10 @@ interface EditorState {
 export const useEditorStore = create<EditorState>((set) => ({
   planId: null,
   history: null,
+  saveError: false,
+  setSaveError: (saveError) => set({ saveError }),
   load: (planId, snapshot) => set({ planId, history: startHistory(snapshot) }),
-  reset: () => set({ planId: null, history: null }),
+  reset: () => set({ planId: null, history: null, saveError: false }),
   edit: (next) =>
     set((s) => (s.history ? { history: commit(s.history, next) } : s)),
   undo: () => set((s) => (s.history ? { history: undo(s.history) } : s)),

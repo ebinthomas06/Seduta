@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { StepScreen } from "@/components/plan/StepScreen";
 import { BottomBar } from "@/components/ui/BottomBar";
@@ -16,26 +15,15 @@ import { Workspace } from "@/components/workspace/Workspace";
 import { institutionHint } from "@/lib/labels";
 import { routes } from "@/lib/routes";
 import { usePlanId } from "@/lib/useRouteParams";
+import { LoadingState, PlanNotFound } from "@/components/plan/PlanStates";
 
 export function SetupScreen() {
   const id = usePlanId();
   const plan = usePlan(id);
   const desktop = useIsDesktop();
 
-  if (plan === undefined) return null;
-  if (plan === null) {
-    return (
-      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-start gap-3 px-4 pt-10">
-        <h1 className="text-[24px] font-semibold">Plan not found</h1>
-        <p className="text-[14px] text-ink2">
-          It may have been deleted from this device.
-        </p>
-        <Link href="/" className="text-[15px] font-medium">
-          Back to saved plans
-        </Link>
-      </div>
-    );
-  }
+  if (plan === undefined) return <LoadingState />;
+  if (plan === null) return <PlanNotFound />;
   return desktop ? (
     <Workspace plan={plan} />
   ) : (

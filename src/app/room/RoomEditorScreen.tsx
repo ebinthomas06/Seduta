@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { BottomBar } from "@/components/ui/BottomBar";
@@ -28,25 +27,28 @@ import {
 import type { Room } from "@/lib/seating/seating";
 import { routes } from "@/lib/routes";
 import { usePlanId, useRoomId } from "@/lib/useRouteParams";
+import {
+  LoadingState,
+  NotFoundState,
+  PlanNotFound,
+} from "@/components/plan/PlanStates";
 
 export function RoomEditorScreen() {
   const id = usePlanId();
   const roomId = useRoomId();
   const plan = usePlan(id);
 
-  if (plan === undefined) return null;
+  if (plan === undefined) return <LoadingState />;
   const existing = plan?.rooms.find((r) => r.id === roomId);
-  if (plan === null || (roomId !== "new" && !existing)) {
+  if (plan === null) return <PlanNotFound />;
+  if (roomId !== "new" && !existing) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-start gap-3 px-4 pt-10">
-        <h1 className="text-[24px] font-semibold">Room not found</h1>
-        <Link
-          href={plan ? routes.rooms(plan.id) : routes.home}
-          className="text-[15px] font-medium"
-        >
-          Back
-        </Link>
-      </div>
+      <NotFoundState
+        title="Room not found"
+        text="It may have been deleted from this plan."
+        href={routes.rooms(plan.id)}
+        label="Back to rooms"
+      />
     );
   }
   return (

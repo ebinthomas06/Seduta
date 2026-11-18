@@ -18,28 +18,20 @@ import { useGenerate } from "@/lib/useGenerate";
 import { useIsDesktop } from "@/lib/useIsDesktop";
 import { routes } from "@/lib/routes";
 import { usePlanId } from "@/lib/useRouteParams";
+import { LoadingState, PlanNotFound } from "@/components/plan/PlanStates";
 
 export function ReviewScreen() {
   const id = usePlanId();
   const plan = usePlan(id);
   const desktop = useIsDesktop();
 
-  if (plan === undefined) return null;
-  if (plan === null) {
-    return (
-      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-start gap-3 px-4 pt-10">
-        <h1 className="text-[24px] font-semibold">Plan not found</h1>
-        <Link href="/" className="text-[15px] font-medium">
-          Back to saved plans
-        </Link>
-      </div>
-    );
-  }
+  if (plan === undefined) return <LoadingState />;
+  if (plan === null) return <PlanNotFound />;
   return desktop ? <Workspace plan={plan} /> : <Review plan={plan} />;
 }
 
 function Review({ plan }: { plan: Plan }) {
-  const { generate, busy, unplaced, dismiss } = useGenerate(plan);
+  const { generate, busy, error, unplaced, dismiss } = useGenerate(plan);
 
   const stepHref = (s: FixStep) => routes[s](plan.id);
   const review = useMemo(() => reviewPlan(plan), [plan]);
@@ -88,6 +80,14 @@ function Review({ plan }: { plan: Plan }) {
           >
             Generate seating
           </Button>
+          {error && (
+            <p
+              role="alert"
+              className="text-center text-[13px] font-medium text-alert"
+            >
+              {error}
+            </p>
+          )}
           <p className="text-center text-[13px] leading-snug text-ink2">
             You can move any student afterwards.
           </p>

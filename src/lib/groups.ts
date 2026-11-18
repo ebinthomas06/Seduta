@@ -12,8 +12,17 @@ export const CLASS_OPTIONS = Array.from(
   (_, i) => `Class ${i + 1}`,
 );
 
-export function primaryOptions(institution: Institution): string[] {
-  return institution === "school" ? CLASS_OPTIONS : YEAR_OPTIONS;
+/**
+ * Choices for the first group field. `current` is kept in the list even when it belongs to the
+ * other institution (for example after switching College to School), so nothing is silently
+ * changed on screen.
+ */
+export function primaryOptions(
+  institution: Institution,
+  current?: string,
+): string[] {
+  const base = institution === "school" ? CLASS_OPTIONS : YEAR_OPTIONS;
+  return current && !base.includes(current) ? [current, ...base] : base;
 }
 
 /** Everything the add/edit sheet edits, as the strings typed into the fields. */

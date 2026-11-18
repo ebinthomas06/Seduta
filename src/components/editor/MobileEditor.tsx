@@ -44,8 +44,7 @@ export function MobileEditor({ c }: { c: LayoutController }) {
         }
       />
 
-      <div
-        role="tablist"
+      <nav
         aria-label="Rooms"
         className="flex flex-none overflow-x-auto border-b border-rule px-2"
       >
@@ -56,8 +55,7 @@ export function MobileEditor({ c }: { c: LayoutController }) {
             <button
               key={r.id}
               type="button"
-              role="tab"
-              aria-selected={on}
+              aria-current={on ? "true" : undefined}
               aria-label={`${r.name}${n ? `, ${n} ${n === 1 ? "clash" : "clashes"}` : ""}`}
               onClick={() => c.chooseRoom(r.id)}
               className={cx(
@@ -79,7 +77,7 @@ export function MobileEditor({ c }: { c: LayoutController }) {
             </button>
           );
         })}
-      </div>
+      </nav>
 
       {!selected && (
         <div className="flex flex-none flex-col gap-2 px-4 pt-3">
@@ -114,7 +112,7 @@ export function MobileEditor({ c }: { c: LayoutController }) {
         </div>
       )}
 
-      <div
+      <main
         ref={wrapRef}
         className="min-h-0 flex-1 overflow-auto px-3 pt-4 pb-2"
       >
@@ -139,7 +137,16 @@ export function MobileEditor({ c }: { c: LayoutController }) {
             {c.notice}
           </p>
         )}
-      </div>
+        {c.saveError && (
+          <p
+            role="alert"
+            className="mt-3 text-center text-[13px] font-medium text-alert"
+          >
+            Couldn&apos;t save your last change on this device. Export a backup
+            from the saved plans page, then reload.
+          </p>
+        )}
+      </main>
 
       {selected ? (
         <SelectedPanel

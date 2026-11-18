@@ -74,6 +74,9 @@ function GroupFields({
   onSave,
 }: GroupSheetProps) {
   const labels = institutionLabels(institution);
+  const otherLabels = institutionLabels(
+    institution === "school" ? "college" : "school",
+  );
   const [form, setForm] = useState<GroupForm>(() =>
     group ? formFromGroup(group, institution) : emptyForm(institution),
   );
@@ -97,15 +100,16 @@ function GroupFields({
       }}
     >
       <p className="text-[13px] leading-snug text-ink2">
-        For a school, these two fields read Class and Section instead of Year
-        and Branch.
+        For a {labels.otherName}, these two fields read {otherLabels.primary}{" "}
+        and {otherLabels.secondary} instead of {labels.primary} and{" "}
+        {labels.secondary}.
       </p>
 
       <div className="flex gap-3">
         <SelectField
           className="flex-1"
           label={labels.primary}
-          options={primaryOptions(institution)}
+          options={primaryOptions(institution, form.primary)}
           value={form.primary}
           onChange={(e) => set("primary")(e.target.value)}
         />
