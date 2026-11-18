@@ -9,6 +9,8 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import Link from "next/link";
+import { useState } from "react";
+import { ExportDialog } from "@/components/export/ExportDialog";
 import { DndSeat } from "@/components/editor/DndSeat";
 import type { LayoutController } from "@/components/editor/useLayoutController";
 import { Button } from "@/components/ui/Button";
@@ -40,6 +42,7 @@ const parseSeat = (id: string | number): Seat => {
 /** D3: rooms rail, large grid with drag-to-swap, and an inspector. */
 export function DesktopEditor({ c }: { c: LayoutController }) {
   const { plan, snap, rules, room, selected, selStudent } = c;
+  const [exportOpen, setExportOpen] = useState(false);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
@@ -106,8 +109,7 @@ export function DesktopEditor({ c }: { c: LayoutController }) {
           <Button
             size="sm"
             className="px-[18px]"
-            disabled
-            title="Export arrives in a later step"
+            onClick={() => setExportOpen(true)}
           >
             <DownloadIcon size={16} /> Export
           </Button>
@@ -429,6 +431,12 @@ export function DesktopEditor({ c }: { c: LayoutController }) {
         </aside>
       </div>
 
+      <ExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        plan={plan}
+        snap={snap}
+      />
       <ConfirmDialog
         open={c.confirmRearrange}
         title={`Rearrange ${room.name}?`}

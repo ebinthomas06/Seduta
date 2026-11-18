@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { ExportDialog } from "@/components/export/ExportDialog";
 import { SelectedPanel } from "@/components/editor/SelectedPanel";
 import type { LayoutController } from "@/components/editor/useLayoutController";
 import { Button } from "@/components/ui/Button";
@@ -19,6 +20,7 @@ const tabLabel = (name: string) => name.replace(/^room\s+/i, "") || name;
 /** M8 and M9: the phone layout editor. */
 export function MobileEditor({ c }: { c: LayoutController }) {
   const { plan, snap, rules, room, selected, selStudent } = c;
+  const [exportOpen, setExportOpen] = useState(false);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const available = useElementWidth(wrapRef);
@@ -34,8 +36,7 @@ export function MobileEditor({ c }: { c: LayoutController }) {
           <Button
             variant="outline"
             size="sm"
-            disabled
-            title="Export arrives in a later step"
+            onClick={() => setExportOpen(true)}
           >
             <DownloadIcon /> Export
           </Button>
@@ -218,6 +219,12 @@ export function MobileEditor({ c }: { c: LayoutController }) {
         </>
       )}
 
+      <ExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        plan={plan}
+        snap={snap}
+      />
       <ConfirmDialog
         open={c.confirmRearrange}
         title={`Rearrange ${room.name}?`}
