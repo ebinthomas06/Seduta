@@ -2,6 +2,8 @@
 
 Seat students in exam rooms so that nobody sits next to a student writing the same subject. Built for teachers and exam coordinators at schools and colleges, mostly on a phone, sometimes on a desktop.
 
+**Live: [seduta.ebinthomas.dev](https://seduta.ebinthomas.dev)**. Free to use, no account, and it works offline once you've opened it.
+
 You enter **roll number ranges** (not student lists), describe your **rooms**, and Seduta generates a seating plan. You fix anything by hand, then export a **PDF** of the seat layout (one page per room) and a **Word** table of which roll numbers sit in which room.
 
 |                                                        |                                                             |
@@ -73,7 +75,7 @@ In a production build, the app registers a small service worker (`/sw.js`) that 
 
 ## Deploying
 
-There is no backend and no environment variable. Any host that can run a Next.js app works. On Vercel, import the repository and accept the defaults. Because the app has no server code, `output: "export"` in `next.config.ts` should also let it be served as plain files from any static host, but that has not been tried here.
+The live site runs on Vercel at [seduta.ebinthomas.dev](https://seduta.ebinthomas.dev). There is no backend and no environment variable. Any host that can run a Next.js app works. On Vercel, import the repository and accept the defaults. Because the app has no server code, `output: "export"` in `next.config.ts` should also let it be served as plain files from any static host, but that has not been tried here.
 
 ## Limits
 

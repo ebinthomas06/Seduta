@@ -23,9 +23,15 @@ export function StepScreen({
 }: StepScreenProps) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
-      <TopBar title="New seating plan" backHref={backHref} backLabel={backLabel} />
+      <TopBar
+        title="New seating plan"
+        backHref={backHref}
+        backLabel={backLabel}
+      />
       <StepIndicator step={step} name={stepName} />
-      <main className="flex flex-1 flex-col gap-7 px-4 pt-6 pb-6">{children}</main>
+      <main className="flex flex-1 flex-col gap-7 px-4 pt-6 pb-6">
+        {children}
+      </main>
       <div className="sticky bottom-0 bg-bg">{footer}</div>
     </div>
   );

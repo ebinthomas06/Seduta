@@ -18,10 +18,23 @@ const plexMono = IBM_Plex_Mono({
   weight: ["400", "500"],
 });
 
+const DESCRIPTION =
+  "Exam seating arrangements, without neighbours sharing a subject.";
+
 export const metadata: Metadata = {
+  // Lets links to icons and previews resolve to the real address.
+  metadataBase: new URL("https://seduta.ebinthomas.dev"),
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
-  description:
-    "Exam seating arrangements, without neighbours sharing a subject.",
+  description: DESCRIPTION,
+  // What shows when the link is shared in a chat or social post.
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: APP_NAME,
+    title: `${APP_NAME}: exam seating plans`,
+    description: DESCRIPTION,
+    images: [{ url: "/icons/icon-512.png", width: 512, height: 512 }],
+  },
   icons: { apple: "/icons/apple-touch-icon.png" },
   appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
 };
