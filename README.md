@@ -21,7 +21,7 @@ You enter **roll number ranges** (not student lists), describe your **rooms**, a
 - **Export** a PDF (A4 or Letter, readable in greyscale) and a Word document.
 - **Local-first.** Everything stays on the device in the browser's storage. There is no account and no server. It works offline once installed.
 - **Backup and restore** to a JSON file from the saved plans page, because clearing site data would delete your plans.
-- **Light and dark** themes, following the system by default.
+- **Light and dark** themes. A first visit is always light; the sun/moon button in the header switches, and the choice is remembered.
 
 ## Run it
 

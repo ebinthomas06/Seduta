@@ -8,9 +8,16 @@ import {
   useSyncExternalStore,
 } from "react";
 
-export type ThemePreference = "system" | "light" | "dark";
+/** First-time visitors always get light. After that the choice is theirs and is remembered. */
+export type ThemePreference = "light" | "dark";
 
 const STORAGE_KEY = "seduta-theme";
+
+/** Browser bar colours, matching --bg in each theme. */
+const BAR_COLOR: Record<ThemePreference, string> = {
+  light: "#F4F1EA",
+  dark: "#14161B",
+};
 
 interface ThemeContextValue {
   theme: ThemePreference;
@@ -30,36 +37,35 @@ function subscribe(listener: () => void) {
 
 function readStored(): ThemePreference {
   try {
-    const value = localStorage.getItem(STORAGE_KEY);
-    if (value === "light" || value === "dark") return value;
+    if (localStorage.getItem(STORAGE_KEY) === "dark") return "dark";
   } catch {
-    // storage unavailable: fall back to system
+    // storage unavailable: stay on light
   }
-  return "system";
+  return "light";
 }
 
 function applyTheme(theme: ThemePreference) {
-  const root = document.documentElement;
-  if (theme === "system") root.removeAttribute("data-theme");
-  else root.setAttribute("data-theme", theme);
+  document.documentElement.setAttribute("data-theme", theme);
+  document
+    .querySelectorAll('meta[name="theme-color"]')
+    .forEach((m) => m.setAttribute("content", BAR_COLOR[theme]));
 }
 
-/** Inline script run before paint so the stored theme never flashes. */
-export const themeInitScript = `try{var t=localStorage.getItem("${STORAGE_KEY}");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}`;
+/** Inline script run before paint so a saved dark choice never flashes light first. */
+export const themeInitScript = `try{if(localStorage.getItem("${STORAGE_KEY}")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.setAttribute("content","${BAR_COLOR.dark}")})}}catch(e){}`;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = useSyncExternalStore(
     subscribe,
     readStored,
-    () => "system" as ThemePreference,
+    () => "light" as ThemePreference,
   );
 
   const setTheme = useCallback((next: ThemePreference) => {
     try {
-      if (next === "system") localStorage.removeItem(STORAGE_KEY);
-      else localStorage.setItem(STORAGE_KEY, next);
+      localStorage.setItem(STORAGE_KEY, next);
     } catch {
-      // ignore storage errors
+      // ignore storage errors: the choice still applies until the page closes
     }
     applyTheme(next);
     listeners.forEach((l) => l());

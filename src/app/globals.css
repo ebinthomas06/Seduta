@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
-/* Design tokens (plan.md section 4).
-   Light is the default. Dark applies when the system prefers it,
-   unless the user forced light; data-theme="dark" forces dark. */
+/* Design tokens (plan.md section 4). Light is the default; data-theme="dark" switches to dark. */
 :root {
   --bg: #f4f1ea;
   --surface: #fbfaf6;
@@ -24,27 +22,6 @@
   --page: #fdfdfb;
   --wash: #ece8dd;
   --bar: #dad5c8;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #14161b;
-    --surface: #1d2027;
-    --ink: #ece8dd;
-    --ink2: #a3a8b3;
-    --ink3: #c4c8d0;
-    --rule: #343841;
-    --rule2: #6b707b;
-    --accent: #8fa8e8;
-    --accent-hover: #b5c6f2;
-    --on-accent: #14161b;
-    --alert: #f08a6a;
-    --scrim: #07080a;
-    --tint-1: #25304d;
-    --tint-2: #6b5226;
-    --tint-3: #46513f;
-    --on-alert: #14161b;
-  }
 }
 
 :root[data-theme="dark"] {

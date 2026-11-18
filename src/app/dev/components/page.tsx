@@ -143,7 +143,6 @@ export default function ComponentGallery() {
           value={theme}
           onChange={setTheme}
           options={[
-            { value: "system", label: "System" },
             { value: "light", label: "Light" },
             { value: "dark", label: "Dark" },
           ]}

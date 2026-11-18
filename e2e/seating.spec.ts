@@ -210,3 +210,23 @@ test("the sun/moon button switches between light and dark and remembers it", asy
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await expect(html).toHaveAttribute("data-theme", "light");
 });
+
+test("a first visit is light even when the device prefers dark", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("body")).toHaveCSS(
+    "background-color",
+    "rgb(244, 241, 234)",
+  );
+
+  // From then on it follows their choice.
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await page.reload();
+  await expect(page.locator("body")).toHaveCSS(
+    "background-color",
+    "rgb(20, 22, 27)",
+  );
+});

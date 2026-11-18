@@ -1,25 +1,11 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { useTheme } from "@/components/ThemeProvider";
-
-const QUERY = "(prefers-color-scheme: dark)";
-
-function subscribe(onChange: () => void) {
-  const mql = window.matchMedia(QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-}
 
 /** One tap switches between light and dark. It shows the mode you would switch to. */
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const systemDark = useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(QUERY).matches,
-    () => false,
-  );
-  const dark = theme === "system" ? systemDark : theme === "dark";
+  const dark = theme === "dark";
   const next = dark ? "light" : "dark";
 
   return (
