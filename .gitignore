@@ -4,8 +4,8 @@ PLAN.md
 plan/
 docs/wireframes/
 # Uncomment if you also want to keep Claude Code's instructions private:
-# CLAUDE.md
-# .claude/
+CLAUDE.md
+.claude/
 
 # ── Dependencies ─────────────────────────────────────────────
 node_modules/
