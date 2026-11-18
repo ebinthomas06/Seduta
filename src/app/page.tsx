@@ -1,10 +1,5 @@
-import { AppHeader } from "@/components/AppHeader";
+import { PlansScreen } from "@/components/plans/PlansScreen";
 
 export default function Home() {
-  return (
-    <>
-      <AppHeader />
-      <main className="flex-1 px-4 py-6" />
-    </>
-  );
+  return <PlansScreen />;
 }

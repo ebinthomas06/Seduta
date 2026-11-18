@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { cx } from "@/lib/cx";
 
-type Variant = "primary" | "outline" | "danger" | "dashed" | "text";
+type Variant =
+  "primary" | "outline" | "danger" | "dashed" | "text" | "textDanger";
 type Size = "lg" | "md" | "sm";
 
 const variants: Record<Variant, string> = {
@@ -10,6 +11,7 @@ const variants: Record<Variant, string> = {
   danger: "border border-alert text-alert",
   dashed: "border border-dashed border-ink2 text-ink",
   text: "text-accent hover:text-accent-hover",
+  textDanger: "text-alert",
 };
 
 const sizes: Record<Size, string> = {
@@ -34,7 +36,9 @@ function classes({ variant = "primary", size = "lg", className }: CommonProps) {
     "inline-flex items-center justify-center gap-2 rounded-md font-medium no-underline",
     "disabled:cursor-not-allowed disabled:opacity-50",
     variants[variant],
-    variant === "text" ? "min-w-11 h-11 px-2 text-[14px]" : sizes[size],
+    variant === "text" || variant === "textDanger"
+      ? "h-11 min-w-11 px-2 text-[14px]"
+      : sizes[size],
     className,
   );
 }
