@@ -8,6 +8,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { BottomBar } from "@/components/ui/BottomBar";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { SettingsPanel } from "@/components/plans/SettingsPanel";
 import { PlusIcon } from "@/components/ui/Icons";
 import { Modal } from "@/components/ui/Modal";
 import { StatusTag } from "@/components/ui/StatusTag";
@@ -219,6 +220,8 @@ export function PlansScreen() {
             </div>
           </>
         )}
+
+        <SettingsPanel />
       </main>
 
       <BottomBar className="sticky bottom-0 mt-6 bg-bg lg:hidden">
