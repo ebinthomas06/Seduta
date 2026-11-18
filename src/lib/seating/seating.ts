@@ -13,6 +13,9 @@ export interface Group {
   to: number; // last roll number (inclusive)
   exclude?: number[]; // absentees / numbers that don't exist
   pad?: number; // zero-pad width, e.g. 3 -> 001
+  // UI metadata so a group can be edited again. The engine never reads these.
+  primary?: string; // "2nd year" / "Class 8"
+  secondary?: string; // "CSE" / "B"
 }
 
 /** A classroom as a grid of seats. Benches are a rendering concern: seatsPerBench just groups columns visually. */
