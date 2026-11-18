@@ -1,8 +1,10 @@
 # ── Planning files (kept locally, never pushed) ──────────────
-plan.md
-PLAN.md
-plan/
-docs/wireframes/
+# Anchored with a leading slash so they only match at the repository root.
+# (An unanchored "plan/" also hid src/components/plan/ from git.)
+/plan.md
+/PLAN.md
+/plan/
+/docs/wireframes/
 # Uncomment if you also want to keep Claude Code's instructions private:
 CLAUDE.md
 .claude/
