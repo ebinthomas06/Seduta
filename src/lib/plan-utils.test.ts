@@ -39,7 +39,7 @@ describe("plan helpers", () => {
     ).toBe(136);
   });
   it("links ready plans to the editor and drafts to setup", () => {
-    expect(planHref({ id: "x", status: "ready" })).toBe("/plan/x/layout");
-    expect(planHref({ id: "x", status: "draft" })).toBe("/plan/x/setup");
+    expect(planHref({ id: "x", status: "ready" })).toBe("/layout?plan=x");
+    expect(planHref({ id: "x", status: "draft" })).toBe("/setup?plan=x");
   });
 });

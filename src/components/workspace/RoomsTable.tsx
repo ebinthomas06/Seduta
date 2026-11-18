@@ -18,6 +18,7 @@ import {
 } from "@/lib/rooms";
 import type { Room } from "@/lib/seating/seating";
 import { fieldLabelClass, SectionHeading } from "./SectionHeading";
+import { routes } from "@/lib/routes";
 
 const GRID =
   "grid grid-cols-[minmax(0,1.5fr)_minmax(0,.6fr)_minmax(0,.8fr)_minmax(0,.9fr)_minmax(0,.9fr)_minmax(0,.6fr)_110px_88px] gap-2.5";
@@ -201,7 +202,7 @@ function RoomRow({
         {usableSeats(room)}
       </div>
       <Button
-        href={`/plan/${planId}/rooms/${room.id}`}
+        href={routes.room(planId, room.id)}
         variant="outline"
         size="sm"
         aria-label={`Edit seats, ${room.name}`}

@@ -1,5 +1,6 @@
 import { expandGroup } from "@/lib/seating/seating";
 import type { Plan } from "@/lib/db/types";
+import { routes } from "@/lib/routes";
 
 export function studentCount(plan: Pick<Plan, "groups">): number {
   return plan.groups.reduce((sum, g) => sum + expandGroup(g).length, 0);
@@ -46,5 +47,7 @@ export function formatEdited(
 
 /** Where tapping a plan should go: finished plans open the editor, drafts resume setup. */
 export function planHref(plan: Pick<Plan, "id" | "status">): string {
-  return `/plan/${plan.id}/${plan.status === "ready" ? "layout" : "setup"}`;
+  return plan.status === "ready"
+    ? routes.layout(plan.id)
+    : routes.setup(plan.id);
 }

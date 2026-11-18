@@ -25,6 +25,7 @@ import {
   planHref,
   studentCount,
 } from "@/lib/plan-utils";
+import { routes } from "@/lib/routes";
 
 const plural = (n: number, one: string, many = `${one}s`) =>
   `${n} ${n === 1 ? one : many}`;
@@ -37,7 +38,7 @@ export function PlansScreen() {
 
   async function newPlan() {
     const plan = await createPlan();
-    router.push(`/plan/${plan.id}/setup`);
+    router.push(routes.setup(plan.id));
   }
 
   async function copyPlan(plan: Plan) {

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import type { Student } from "@/lib/seating/seating";
+import { routes } from "@/lib/routes";
 
 /** Shown after generating when some students could not be seated safely. */
 export function UnplacedDialog({
@@ -36,7 +37,7 @@ export function UnplacedDialog({
             <Button variant="outline" size="md" onClick={onClose}>
               Back to review
             </Button>
-            <Button size="md" href={`/plan/${planId}/layout`}>
+            <Button size="md" href={routes.layout(planId)}>
               Open layout
             </Button>
           </div>

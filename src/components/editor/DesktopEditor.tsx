@@ -30,6 +30,7 @@ import {
   type Seat,
 } from "@/lib/editor/ops";
 import { roomMeta } from "@/lib/rooms";
+import { routes } from "@/lib/routes";
 
 const railLabel =
   "px-2 font-mono text-[11px] font-medium tracking-[.08em] text-ink2 uppercase";
@@ -195,7 +196,7 @@ export function DesktopEditor({ c }: { c: LayoutController }) {
             </div>
             {c.unplaced.length > 0 && (
               <Link
-                href={`/plan/${plan.id}/rooms`}
+                href={routes.rooms(plan.id)}
                 className="px-2 text-[13px] font-medium"
               >
                 Add a room

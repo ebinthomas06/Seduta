@@ -14,6 +14,7 @@ import { TopBar } from "@/components/ui/TopBar";
 import { cx } from "@/lib/cx";
 import { bestEmptySeat, clashNeighbours, roomClashes } from "@/lib/editor/ops";
 import { fitCellSize, useElementWidth } from "@/lib/useElementWidth";
+import { routes } from "@/lib/routes";
 
 const tabLabel = (name: string) => name.replace(/^room\s+/i, "") || name;
 
@@ -105,7 +106,7 @@ export function MobileEditor({ c }: { c: LayoutController }) {
                 {c.unplaced.length > 6 ? ` +${c.unplaced.length - 6} more` : ""}
               </span>
               .{" "}
-              <Link href={`/plan/${plan.id}/rooms`} className="font-medium">
+              <Link href={routes.rooms(plan.id)} className="font-medium">
                 Add a room
               </Link>
             </p>

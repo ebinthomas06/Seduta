@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 import { APP_NAME } from "@/lib/constants";
 import "./globals.css";
@@ -20,6 +21,15 @@ export const metadata: Metadata = {
   title: APP_NAME,
   description:
     "Exam seating arrangements, without neighbours sharing a subject.",
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F4F1EA" },
+    { media: "(prefers-color-scheme: dark)", color: "#14161B" },
+  ],
 };
 
 export default function RootLayout({
@@ -36,6 +46,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <ThemeProvider>{children}</ThemeProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { updatePlan } from "@/lib/db/plans";
 import type { Plan } from "@/lib/db/types";
 import { place, type Student } from "@/lib/seating/seating";
+import { routes } from "@/lib/routes";
 
 /**
  * Runs the engine, saves the layout and marks the plan ready. Goes straight to the editor when
@@ -22,7 +23,7 @@ export function useGenerate(plan: Plan) {
     await updatePlan(plan.id, { layout: result.layout, status: "ready" });
     setBusy(false);
     if (result.unplaced.length > 0) setUnplaced(result.unplaced);
-    else router.push(`/plan/${plan.id}/layout`);
+    else router.push(routes.layout(plan.id));
   }
 
   return { generate, busy, unplaced, dismiss: () => setUnplaced(null) };
