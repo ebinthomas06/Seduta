@@ -193,3 +193,20 @@ test("backup downloads a file and restore brings a plan back", async ({
     .click();
   await expect(visibleText(page, "Backup me")).toBeVisible();
 });
+
+test("the sun/moon button switches between light and dark and remembers it", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/");
+  const html = page.locator("html");
+
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(html).toHaveAttribute("data-theme", "light");
+});

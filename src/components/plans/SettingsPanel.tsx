@@ -1,11 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useTheme, type ThemePreference } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { DownloadIcon } from "@/components/ui/Icons";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { monoLabelClass } from "@/components/ui/TextField";
 import {
   backupFileName,
@@ -18,9 +16,8 @@ import { downloadBytes } from "@/lib/export/files";
 
 type Status = { kind: "ok" | "error"; text: string } | null;
 
-/** Theme choice and backup/restore. Plans live only in this browser, so a backup matters. */
+/** Backup and restore. Plans live only in this browser, so a backup matters. */
 export function SettingsPanel() {
-  const { theme, setTheme } = useTheme();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<Backup | null>(null);
   const [status, setStatus] = useState<Status>(null);
@@ -79,23 +76,6 @@ export function SettingsPanel() {
       <h2 id="settings-heading" className={monoLabelClass}>
         Settings
       </h2>
-
-      <div className="flex items-center justify-between gap-4">
-        <span className="text-[16px]" aria-hidden="true">
-          Appearance
-        </span>
-        <SegmentedControl<ThemePreference>
-          legend="Appearance"
-          size="sm"
-          value={theme}
-          onChange={setTheme}
-          options={[
-            { value: "system", label: "System" },
-            { value: "light", label: "Light" },
-            { value: "dark", label: "Dark" },
-          ]}
-        />
-      </div>
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">

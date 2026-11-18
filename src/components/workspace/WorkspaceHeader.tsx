@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { APP_NAME } from "@/lib/constants";
 
 /** Desktop header: app name and a breadcrumb back to the saved plans. */
 export function WorkspaceHeader({ planName }: { planName: string }) {
   return (
-    <header className="flex h-14 flex-none items-center gap-6 border-b border-rule px-8">
+    <header className="flex h-14 flex-none items-center gap-6 border-b border-rule pr-6 pl-8">
       <span className="font-mono text-[15px] font-semibold tracking-[.04em]">
         {APP_NAME}
       </span>
@@ -18,6 +19,9 @@ export function WorkspaceHeader({ planName }: { planName: string }) {
         <span aria-hidden="true">/</span>
         <span className="truncate text-ink">{planName}</span>
       </nav>
+      <div className="ml-auto">
+        <ThemeToggle />
+      </div>
     </header>
   );
 }
